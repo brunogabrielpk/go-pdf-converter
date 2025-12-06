@@ -5,7 +5,11 @@ import (
 	"log"
 	"time"
 
-	_ "github.com/mattn/go-sqlite3"
+	"fmt"
+	"os"
+
+	// _ "github.com/mattn/go-sqlite3"
+	_ "github.com/lib/pq"
 )
 
 type FileRecord struct {
@@ -20,17 +24,27 @@ type Database struct {
 }
 
 func NewDatabase(filepath string) (*Database, error) {
-	db, err := sql.Open("sqlite3", filepath)
+	connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
+		os.Getenv("DB_HOST"),
+		os.Getenv("DB_PORT"),
+		os.Getenv("DB_USER"),
+		os.Getenv("DB_PASSWORD"),
+		os.Getenv("DB_NAME"),
+	)
+
+	db, err := sql.Open("postgres", connStr)
 	if err != nil {
 		return nil, err
 	}
 
 	// Create table if not exists
+	// Note: Postgres uses SERIAL for auto-incrementing integer
+	// and BYTEA for binary data
 	createTableSQL := `CREATE TABLE IF NOT EXISTS files (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		id SERIAL PRIMARY KEY,
 		original_name TEXT NOT NULL,
-		pdf_data BLOB NOT NULL,
-		uploaded_at DATETIME DEFAULT CURRENT_TIMESTAMP
+		pdf_data BYTEA NOT NULL,
+		uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 	);`
 
 	_, err = db.Exec(createTableSQL)
@@ -42,20 +56,24 @@ func NewDatabase(filepath string) (*Database, error) {
 }
 
 func (d *Database) SaveFile(originalName string, pdfData []byte) (int64, error) {
-	result, err := d.db.Exec(
-		"INSERT INTO files (original_name, pdf_data) VALUES (?, ?)",
+	var id int64
+	// Postgres uses $1, $2 placeholders and RETURNING to get the id
+	err := d.db.QueryRow(
+		"INSERT INTO files (original_name, pdf_data) VALUES ($1, $2) RETURNING id",
 		originalName, pdfData,
-	)
+	).Scan(&id)
+
 	if err != nil {
 		return 0, err
 	}
-	return result.LastInsertId()
+	return id, nil
 }
 
 func (d *Database) GetFile(id int64) (*FileRecord, error) {
 	var record FileRecord
+	// Postgres ises $1 placeholder
 	err := d.db.QueryRow(
-		"SELECT id, original_name, pdf_data, uploaded_at FROM files WHERE id = ?",
+		"SELECT id, original_name, pdf_data, uploaded_at FROM files WHERE id = $1",
 		id,
 	).Scan(&record.ID, &record.OriginalName, &record.PDFData, &record.UploadedAt)
 

@@ -1,16 +1,50 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 )
 
 func main() {
+	// Get database configuration from environment variables
+	dbHost := os.Getenv("DB_HOST")
+	dbPort := os.Getenv("DB_PORT")
+	dbUser := os.Getenv("DB_USER")
+	dbPassword := os.Getenv("DB_PASSWORD")
+	dbName := os.Getenv("DB_NAME")
+
+	// Default to localhost if env vars are missing (for local testing)
+	if dbHost == "" {
+		dbHost = "localhost"
+		dbPort = "5432"
+		dbUser = "postgres"
+		dbPassword = "postgres"
+		dbName = "pdfconverter"
+	}
+
+	// Construct connection string
+	connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", dbHost, dbPort, dbUser, dbPassword, dbName)
+
 	// Initialize database
-	db, err := NewDatabase("./files.db")
+	var db *Database
+	var err error
+	maxRetries := 5
+
+	for i := 0; i < maxRetries; i++ {
+
+		db, err = NewDatabase(connStr)
+		if err == nil {
+			break
+		}
+		log.Printf("Failed to connect to databse (attempt %d/%d): %v", i+1, maxRetries, err)
+		time.Sleep(6 * time.Second) // wait 6 seconds before retrying
+	}
+
 	if err != nil {
 		log.Fatalf("Failed to initialize database: %v", err)
 	}
