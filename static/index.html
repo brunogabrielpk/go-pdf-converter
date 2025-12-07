@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -27,7 +28,7 @@
             padding: 40px;
             max-width: 600px;
             width: 100%;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
         }
 
         h1 {
@@ -201,6 +202,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <h1>File to PDF Converter</h1>
@@ -209,7 +211,7 @@
         <div class="upload-area" id="uploadArea">
             <div class="upload-icon">📁</div>
             <div class="upload-text">Drag & drop files here or click to browse</div>
-            <input type="file" id="fileInput" class="file-input" multiple accept=".jpg,.jpeg,.png,.txt">
+            <input type="file" id="fileInput" class="file-input" multiple accept=".jpg,.jpeg,.png,.txt,.docx">
         </div>
 
         <div class="file-list" id="fileList"></div>
@@ -223,7 +225,7 @@
 
         <div class="supported-formats">
             <h3>Supported Formats</h3>
-            <div class="format-list">Images: JPG, JPEG, PNG | Documents: TXT</div>
+            <div class="format-list">Images: JPG, JPEG, PNG | Documents: TXT, DOCX</div>
         </div>
     </div>
 
@@ -357,4 +359,5 @@
         });
     </script>
 </body>
+
 </html>

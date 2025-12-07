@@ -17,6 +17,9 @@ FROM alpine:latest
 
 WORKDIR /app
 
+# Install LibreOffice for DOCX conversion
+RUN apk add --no-cache libreoffice ttf-dejavu
+
 COPY --from=builder /app/main .
 COPY --from=builder /app/static ./static
 

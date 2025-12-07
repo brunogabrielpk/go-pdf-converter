@@ -8,6 +8,8 @@ import (
 	_ "image/jpeg"
 	_ "image/png"
 	"io"
+	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 
@@ -23,6 +25,8 @@ func ConvertToPDF(filename string, data []byte) ([]byte, error) {
 		return convertImageToPDF(filename, data)
 	case ".txt":
 		return convertTextToPDF(filename, data)
+	case ".docx":
+		return convertDocxToPDF(filename, data)
 	default:
 		return nil, fmt.Errorf("unsupported file type: %s", ext)
 	}
@@ -160,4 +164,45 @@ func CreateZip(files map[string][]byte) ([]byte, error) {
 	}
 
 	return buf.Bytes(), nil
+}
+
+func convertDocxToPDF(filename string, data []byte) ([]byte, error) {
+	// Create a temporary file for the input
+	tmpDir := os.TempDir()
+	tmpInputFile := filepath.Join(tmpDir, filename)
+
+	if err := os.WriteFile(tmpInputFile, data, 0644); err != nil {
+		return nil, fmt.Errorf("failed to write temp files: %w", err)
+	}
+	defer os.Remove(tmpInputFile) // Clean up input file
+
+	// Run LibreOffice to convert the file
+	// --headless: no UI
+	// --convert-to PDF: output format
+	// --outdir: output directory
+	cmd := exec.Command("libreoffice", "--headless", "--convert-to", "pdf", "--outdir", tmpDir, tmpInputFile)
+
+	// Capture output for debugging if needed
+	var stderr bytes.Buffer
+	cmd.Stderr = &stderr
+
+	if err := cmd.Run(); err != nil {
+		return nil, fmt.Errorf("libreoffice conversion failed: %v, stderr: %s", err, stderr.String())
+	}
+
+	// Construct expected output filename
+	// LibreOffice uses the same base name with .pdf extension
+	baseName := strings.TrimSuffix(filename, filepath.Ext(filename))
+	outputFile := filepath.Join(tmpDir, baseName+".pdf")
+
+	// Read the generated PDF
+	pdfData, err := os.ReadFile(outputFile)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read converted PDF: %w", err)
+	}
+
+	// Clean up the output file
+	defer os.Remove(outputFile)
+
+	return pdfData, nil
 }
