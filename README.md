@@ -39,6 +39,17 @@ pdf-converter/
 - **PostgreSQL** (if not using Docker)
 - **LibreOffice** (for DOCX conversion)
 
+## Getting Started
+
+1.  Clone the repository:
+    ```bash
+    git clone https://github.com/brunogabrielpk/go-pdf-converter.git
+    ```
+2.  Navigate to the project directory:
+    ```bash
+    cd go-pdf-converter
+    ```
+
 ## Running the Application
 
 ### Using Docker Compose (Recommended)
