@@ -26,7 +26,7 @@ pdf-converter/
 ├── files.db              # SQLite database for local development
 ├── go.mod                # Go module file
 ├── Dockerfile            # Docker build instructions
-├── docker-compose.yml    # Docker Compose configuration
+└── docker-compose.yml    # Docker Compose configuration
 ```
 
 ## Installation
