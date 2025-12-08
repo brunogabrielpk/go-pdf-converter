@@ -142,7 +142,6 @@ Download multiple PDFs as a ZIP archive.
 
 - `github.com/lib/pq`: PostgreSQL driver.
 - `github.com/jung-kurt/gofpdf`: PDF generation library for images and text.
-- `libreoffice`: Required for converting DOCX files. See [DOCX_SUPPORT_GUIDE.md](DOCX_SUPPORT_GUIDE.md) for setup instructions.
 
 ### DOCX to PDF Conversion
 
