@@ -1,10 +1,33 @@
 version: "3.8"
 
 services:
+  traefik:
+    image: "traefik:v2.10"
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:9080"
+      - "--entrypoints.websecure.address=:9443"
+    ports:
+      - "9080:9080"
+      - "9443:9443"
+      - "8080:8080" # for the dashboard
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./traefik.yml:/etc/traefik/traefik.yml:ro"
+      - "./acme.json:/acme.json"
+    environment:
+      - ACME_EMAIL=brunogabrielpk@gmail.com
+
   app:
     build: .
-    ports:
-      - "3000:3000"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.app.rule=Host(`pdf.localhost`)"
+      - "traefik.http.routers.app.entrypoints=websecure"
+      - "traefik.http.routers.app.tls.certresolver=letsencrypt"
+      - "traefik.http.services.app.loadbalancer.server.port=3000"
     environment:
       - DB_HOST=db
       - DB_PORT=5432
