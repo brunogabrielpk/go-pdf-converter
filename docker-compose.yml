@@ -7,12 +7,12 @@ services:
       - "--api.insecure=true"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
-      - "--entrypoints.web.address=:9080"
+      - "--entrypoints.web.address=:19080"
       - "--entrypoints.websecure.address=:9443"
     ports:
-      - "9080:9080"
+      - "19080:9080"
       - "9443:9443"
-      - "9080:8080" # for the dashboard
+      - "19080:8080" # for the dashboard
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "./traefik.yml:/etc/traefik/traefik.yml:ro"
