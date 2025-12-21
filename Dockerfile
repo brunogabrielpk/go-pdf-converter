@@ -23,6 +23,6 @@ RUN apk add --no-cache libreoffice ttf-dejavu
 COPY --from=builder /app/main .
 COPY --from=builder /app/static ./static
 
-EXPOSE 9443
+EXPOSE 40110
 
 CMD ["./main"]
