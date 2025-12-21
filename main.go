@@ -63,7 +63,7 @@ func main() {
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
 
 	// Start server
-	port := ":3000"
+	port := ":19080"
 	log.Printf("Server starting on http://localhost%s", port)
 	log.Println("Supported formats: JPG, JPEG, PNG, TXT")
 
