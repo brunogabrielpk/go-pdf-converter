@@ -33,7 +33,7 @@ services:
     depends_on:
       - db
     ports:
-      - "19080:19080"
+      - "0.0.0.0:19080:19080"
 
   # whoami:
   #   image: "traefik/whoami"
