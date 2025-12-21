@@ -1,12 +1,12 @@
 entryPoints:
   web:
     address: ":19080"
-  websecure:
-    address: ":9443"
+  #websecure:
+  #  address: ":9443"
 
-providers:
-  docker:
-    exposedByDefault: false
+#providers:
+#  docker:
+#    exposedByDefault: false
 
 #certificatesResolvers:
 #letsencrypt:
