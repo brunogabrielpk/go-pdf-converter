@@ -9,10 +9,8 @@ services:
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:19080"
-      #- "--entrypoints.websecure.address=:9443"
     ports:
       - "19080:19080"
-      #- "9443:9443"
       - "19081:8080" # for the dashboard
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
@@ -25,7 +23,8 @@ services:
     build: .
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.app.rule=Host(`168.181.149.171`, `localhost`)"
+      #- "traefik.http.routers.app.rule=Host(`168.181.149.171`, `localhost`)"
+      - "traefik.http.routers.app.rule=PathPrefix(`/app`)"
       - "traefik.http.routers.app.entrypoints=web"
       - "traefik.http.services.app.loadbalancer.server.port=19080"
     environment:
@@ -36,6 +35,13 @@ services:
       - DB_NAME=pdfconverter
     depends_on:
       - db
+
+  whoami:
+    image: "traefik/whoami"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.whoami.rule=PathPrefix(`/whoami`)"
+      - "traefik.http.routers.whoami.entrypoints=web"
 
   db:
     image: postgres:15-alpine
