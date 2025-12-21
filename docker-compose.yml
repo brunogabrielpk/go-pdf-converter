@@ -7,10 +7,10 @@ services:
       - "--api.insecure=true"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
-      - "--entrypoints.web.address=:40110"
-      #- "--entrypoints.websecure.address=:9443"
+      #- "--entrypoints.web.address=:40110"
+      - "--entrypoints.websecure.address=:9443"
     ports:
-      - "40110:40110"
+      #- "40110:40110"
       - "9443:9443"
       - "19081:8080" # for the dashboard
     volumes:
@@ -25,12 +25,12 @@ services:
     labels:
       - "traefik.enable=true"
       #- "traefik.http.routers.app.rule=Host(`pdf.localhost`) || HOST(`localhost`)"
-      #- "traefik.http.routers.app.rule=Host(`168.181.149.171`, `pdf.localhost`, `localhost`)"
-      - "traefik.http.routers.app.rule=Host(`pdf.doutorpc.guru`)"
+      - "traefik.http.routers.app.rule=Host(`168.181.149.171`, `pdf.localhost`, `localhost`)"
+      #- "traefik.http.routers.app.rule=Host(`pdf.doutorpc.guru`)"
       #- "traefik.http.routers.app.entrypoints=websecure"
       - "traefik.http.routers.app.entrypoints=websecure"
       - "traefik.http.routers.app.tls.certresolver=letsencrypt"
-      - "traefik.http.services.app.loadbalancer.server.port=40110"
+      - "traefik.http.services.app.loadbalancer.server.port=9443"
     environment:
       - DB_HOST=db
       - DB_PORT=5432
