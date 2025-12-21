@@ -24,7 +24,8 @@ services:
     build: .
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.app.rule=Host(`pdf.localhost`) || HOST(`localhost`)"
+      #- "traefik.http.routers.app.rule=Host(`pdf.localhost`) || HOST(`localhost`)"
+      - "traefik.http.routers.app.rule=Host(`168.181.149.171`)"
       #- "traefik.http.routers.app.entrypoints=websecure"
       - "traefik.http.routers.app.entrypoints=web"
       - "traefik.http.routers.app.tls.certresolver=letsencrypt"
