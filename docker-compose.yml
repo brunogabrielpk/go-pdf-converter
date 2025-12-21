@@ -7,10 +7,10 @@ services:
       - "--api.insecure=true"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
-      - "--entrypoints.web.address=:40110"
+      - "--entrypoints.web.address=:19080"
       #- "--entrypoints.websecure.address=:9443"
     ports:
-      - "40110:3000"
+      - "19080:3000"
       #- "9443:9443"
       - "19081:8080" # for the dashboard
     volumes:

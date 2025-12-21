@@ -1,6 +1,6 @@
 entryPoints:
   web:
-    address: ":40110"
+    address: ":19080"
   websecure:
     address: ":9443"
 
