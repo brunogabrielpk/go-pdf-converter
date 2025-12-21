@@ -6,16 +6,9 @@ services:
     command:
       - "--api.insecure=true"
       - "--log.level=DEBUG"
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--entrypoints.web.address=:19080"
     ports:
       - "19080:19080"
       - "19081:8080" # for the dashboard
-    volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - "./traefik.yml:/etc/traefik/traefik.yml:ro"
-      - "./acme.json:/acme.json"
     environment:
       - ACME_EMAIL=brunogabrielpk@gmail.com
 
