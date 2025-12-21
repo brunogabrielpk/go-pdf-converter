@@ -1,17 +1,12 @@
-#entryPoints:
-#web:
-#address: ":40110"
-#http:
-#redirections:
-#entryPoint:
-#to: websecure
-#scheme: https
-#websecure:
-#address: ":9443"
+entryPoints:
+  web:
+    address: ":40110"
+  websecure:
+    address: ":9443"
 
-#providers:
-#docker:
-#exposedByDefault: false
+providers:
+  docker:
+    exposedByDefault: false
 
 #certificatesResolvers:
 #letsencrypt:
