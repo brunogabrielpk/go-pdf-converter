@@ -28,6 +28,7 @@ type UploadResponse struct {
 
 // HandleUpload handles both single and multiple file uploads
 func (h *Handler) HandleUpload(w http.ResponseWriter, r *http.Request) {
+	log.Printf("Received request: %s %s", r.Method, r.URL.Path)
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
