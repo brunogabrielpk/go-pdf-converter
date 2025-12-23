@@ -3,6 +3,7 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <base href="/pdf/" />
         <title>File to PDF Converter</title>
         <style>
             * {
@@ -337,7 +338,7 @@
                 });
 
                 try {
-                    const response = await fetch("/pdf/upload", {
+                    const response = await fetch("upload", {
                         method: "POST",
                         body: formData,
                     });
@@ -350,7 +351,7 @@
                         // Single file download
                         if (result.file_id) {
                             downloadSection.innerHTML = `
-                            <a href="/pdf/download?id=${result.file_id}" class="download-btn">Download PDF</a>
+                            <a href="download?id=${result.file_id}" class="download-btn">Download PDF</a>
                         `;
                         }
                         // Multiple files download
@@ -360,7 +361,7 @@
                         ) {
                             const ids = result.file_ids.join(",");
                             downloadSection.innerHTML = `
-                            <a href="/pdf/download-zip?ids=${ids}" class="download-btn">Download All as ZIP</a>
+                            <a href="download-zip?ids=${ids}" class="download-btn">Download All as ZIP</a>
                         `;
                         }
 
