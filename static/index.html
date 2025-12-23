@@ -338,7 +338,7 @@
 
                 try {
                     console.log("Uploading files...");
-                    const response = await fetch("upload", {
+                    const response = await fetch("/pdf/upload", {
                         method: "POST",
                         body: formData,
                     });
@@ -351,7 +351,7 @@
                         // Single file download
                         if (result.file_id) {
                             downloadSection.innerHTML = `
-                            <a href="download?id=${result.file_id}" class="download-btn">Download PDF</a>
+                            <a href="/pdf/download?id=${result.file_id}" class="download-btn">Download PDF</a>
                         `;
                         }
                         // Multiple files download
@@ -361,7 +361,7 @@
                         ) {
                             const ids = result.file_ids.join(",");
                             downloadSection.innerHTML = `
-                            <a href="download-zip?ids=${ids}" class="download-btn">Download All as ZIP</a>
+                            <a href="/pdf/download-zip?ids=${ids}" class="download-btn">Download All as ZIP</a>
                         `;
                         }
 
