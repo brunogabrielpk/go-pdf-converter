@@ -4,178 +4,102 @@ A web application built in Go for converting files (images, text documents, and 
 
 ## Features
 
-- **Single File Upload**: Upload one file at a time and download the converted PDF.
-- **Multiple File Upload**: Upload multiple files and download them as a ZIP archive.
-- **Supported Formats**:
-  - Images: JPG, JPEG, PNG
-  - Documents: TXT, DOCX (requires LibreOffice)
-- **PostgreSQL Storage**: All converted PDFs are stored in a PostgreSQL database.
-- **Modern Web Interface**: Drag-and-drop file upload with real-time feedback.
-- **Containerized**: Fully containerized with Docker and Docker Compose for easy setup.
+-   **Single and Multiple File Conversion**: Upload one or more files and get a converted PDF or a ZIP archive of PDFs.
+-   **Supported Formats**:
+    -   Images: JPG, JPEG, PNG
+    -   Documents: TXT, DOCX
+-   **Database Integration**: Stores converted files in a PostgreSQL database.
+-   **Dockerized**: Comes with a `docker-compose.yml` for easy setup and deployment.
+-   **Modern UI**: A simple and clean user interface with drag-and-drop support.
 
 ## Project Structure
 
 ```
-pdf-converter/
-├── main.go               # HTTP server and routing
-├── database.go           # PostgreSQL database operations
-├── converter.go          # PDF conversion logic
+.
+├── main.go               # Main application entry point
+├── converter.go          # File to PDF conversion logic
 ├── handlers.go           # HTTP request handlers
-├── static/
-│   └── index.html        # Frontend interface
-├── files.db              # SQLite database for local development
-├── go.mod                # Go module file
-├── Dockerfile            # Docker build instructions
-└── docker-compose.yml    # Docker Compose configuration
+├── database.go           # Database interaction logic
+├── static/index.html     # Frontend HTML, CSS, and JS
+├── go.mod                # Go module definition
+├── go.sum                # Go module checksums
+├── Dockerfile            # Dockerfile for building the application
+├── docker-compose.yml    # Docker Compose setup
+├── traefik.yml           # Traefik configuration (optional)
+└── README.md             # This file
 ```
 
-## Installation
+## Prerequisites
 
-### Prerequisites
+-   [Docker](https://docs.docker.com/get-docker/)
+-   [Docker Compose](https://docs.docker.com/compose/install/)
 
-- **Docker** and **Docker Compose** (Recommended)
-- **Go** (version 1.25.1 or later)
-- **PostgreSQL** (if not using Docker)
-- **LibreOffice** (for DOCX conversion)
+## How to Run
 
-## Getting Started
-
-1.  Clone the repository:
-    ```bash
-    git clone https://github.com/brunogabrielpk/go-pdf-converter.git
-    ```
-2.  Navigate to the project directory:
-    ```bash
+1.  **Clone the repository**:
+    ```sh
+    git clone <repository-url>
     cd go-pdf-converter
     ```
 
-## Running the Application
-
-### Using Docker Compose (Recommended)
-
-1.  Navigate to the project directory:
-    ```bash
-    cd go-pdf-converter
-    ```
-2.  Start the application and database:
-    ```bash
+2.  **Run with Docker Compose**:
+    ```sh
     docker-compose up --build
     ```
-3.  Open your browser and navigate to:
-    ```
-    http://localhost:19080
-    ```
+    This will start the Go application and a PostgreSQL database.
 
-### Running Locally
-
-1.  Ensure you have a PostgreSQL database running.
-2.  Set the necessary environment variables (or rely on defaults for localhost):
-    - `DB_HOST`: Database host (default: localhost)
-    - `DB_PORT`: Database port (default: 5432)
-    - `DB_USER`: Database user (default: postgres)
-    - `DB_PASSWORD`: Database password (default: postgres)
-    - `DB_NAME`: Database name (default: pdfconverter)
-3.  Run the application:
-    ```bash
-    go run .
-    ```
-
-## Usage
-
-### Single File Conversion
-
-1.  Click the upload area or drag and drop a file.
-2.  Select a supported file (JPG, JPEG, PNG, TXT, or DOCX).
-3.  Click "Convert to PDF".
-4.  Download the converted PDF file.
-
-### Multiple File Conversion
-
-1.  Click the upload area or drag and drop multiple files.
-2.  Select multiple supported files.
-3.  Click "Convert to PDF".
-4.  Download all converted PDFs as a ZIP archive.
+3.  **Access the application**:
+    Open your web browser and go to `http://localhost:19080`.
 
 ## API Endpoints
 
-### POST /upload
+### `POST /upload`
 
-Upload one or more files for conversion to PDF.
+Uploads one or more files to be converted to PDF.
 
-**Request**: `multipart/form-data` with a "files" field.
+-   **Request:** `multipart/form-data` with one or more files in the `files` field.
+-   **Success Response (200 OK)**:
+    -   For a single file:
+        ```json
+        {
+            "success": true,
+            "message": "File uploaded and converted successfully",
+            "file_id": 1
+        }
+        ```
+    -   For multiple files:
+        ```json
+        {
+            "success": true,
+            "message": "2 files uploaded and converted successfully",
+            "file_ids": [1, 2]
+        }
+        ```
+-   **Error Response (4xx or 5xx)**:
+    ```json
+    {
+        "success": false,
+        "message": "Error message"
+    }
+    ```
 
-**Response**:
-```json
-{
-  "success": true,
-  "message": "File uploaded and converted successfully",
-  "file_id": 1
-}
-```
-For multiple files:
-```json
-{
-  "success": true,
-  "message": "3 files uploaded and converted successfully",
-  "file_ids": [1, 2, 3]
-}
-```
+### `GET /download`
 
-### GET /download?id={file_id}
+Downloads a single converted PDF file.
 
-Download a single converted PDF file.
+-   **Query Parameter:** `id` (the ID of the file).
+-   **Example:** `GET /download?id=1`
 
-**Parameters**:
-- `id`: The file ID returned from the upload.
+### `GET /download-zip`
 
-### GET /download-zip?ids={file_ids}
+Downloads multiple converted PDF files as a ZIP archive.
 
-Download multiple PDFs as a ZIP archive.
-
-**Parameters**:
-- `ids`: A comma-separated list of file IDs (e.g., "1,2,3").
+-   **Query Parameter:** `ids` (a comma-separated list of file IDs).
+-   **Example:** `GET /download-zip?ids=1,2,3`
 
 ## Technical Details
 
-### Dependencies
-
-- `github.com/lib/pq`: PostgreSQL driver.
-- `github.com/jung-kurt/gofpdf`: PDF generation library for images and text.
-- `libreoffice`: Required for converting DOCX files. See [DOCX_SUPPORT_GUIDE.md](DOCX_SUPPORT_GUIDE.md) for setup instructions.
-
-### DOCX to PDF Conversion
-
-The application uses LibreOffice in headless mode to convert DOCX files to PDF. This is a powerful feature that ensures high-fidelity conversions. For this to work, **LibreOffice must be installed on the server where the application is running**. The included Dockerfile does not have LibreOffice installed.
-
-Please refer to the [DOCX_SUPPORT_GUIDE.md](DOCX_SUPPORT_GUIDE.md) for detailed instructions on how to set up your environment for DOCX conversion.
-
-### Database Schema
-
-```sql
-CREATE TABLE files (
-    id SERIAL PRIMARY KEY,
-    original_name TEXT NOT NULL,
-    pdf_data BYTEA NOT NULL,
-    uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-```
-
-## Configuration
-
-The application is configured via environment variables:
-
-- `DB_HOST`: Database host address
-- `DB_PORT`: Database port
-- `DB_USER`: Database username
-- `DB_PASSWORD`: Database password
-- `DB_NAME`: Database name
-
-## Limitations
-
-- **Maximum Upload Size**: 32 MB per request.
-- **DOCX Conversion**: Requires LibreOffice to be installed on the server.
-- **Image Resizing**: Images larger than A4 will be resized to fit.
-
-## License
-
-This project is open source and available for educational purposes.
+-   **Backend**: Go
+-   **Database**: PostgreSQL
+-   **PDF Generation**: `gofpdf` for images and text, `libreoffice` for DOCX files.
+-   **Containerization**: Docker and Docker Compose.
