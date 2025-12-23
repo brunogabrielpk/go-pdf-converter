@@ -337,6 +337,7 @@
                 });
 
                 try {
+                    console.log("Uploading files...");
                     const response = await fetch("upload", {
                         method: "POST",
                         body: formData,
